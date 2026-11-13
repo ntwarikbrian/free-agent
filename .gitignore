@@ -1,0 +1,17 @@
+# Model weights and local artifacts (never commit GB-sized files)
+*.gguf
+*.gguf.part
+*.safetensors
+*.bin
+
+# Runtime logs
+*.log
+logs/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS noise
+Thumbs.db
+desktop.ini
+.DS_Store
