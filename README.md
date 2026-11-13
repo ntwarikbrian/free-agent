@@ -30,7 +30,7 @@ enough to that experience to do real work — at $0.
 | File | What it is |
 |---|---|
 | `Ornith-1.5-35B-A3B_Q4_K_M_ollama.ipynb` | Complete notebook: installs Ollama, pulls the model, starts the server, opens the public API tunnel |
-| `Ternary-Bonsai-2-27B_Q2_0_llama-cpp.ipynb` | Complete notebook: builds llama.cpp (CUDA), pulls the ternary model, serves it 100% on GPU, opens the public API tunnel |
+| `Ternary-Bonsai-2-27B_Q2_0_llama-cpp.ipynb` | Complete notebook: downloads a **prebuilt** CUDA llama.cpp (PrismML fork, no compile), pulls the ternary model, serves it 100% on GPU, opens the public API tunnel |
 | `setup-opencode_Ornith-1.5-35B-A3B_Q4_K_M_ollama.bat` | One-click Windows helper for **both** notebooks: paste the tunnel URL → it asks which model is running (Ornith / Bonsai / both) → writes the provider into OpenCode's config (merges, never overwrites) |
 
 ## The model
