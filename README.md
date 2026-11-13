@@ -30,7 +30,8 @@ enough to that experience to do real work — at $0.
 | File | What it is |
 |---|---|
 | `Ornith-1.5-35B-A3B_Q4_K_M_ollama.ipynb` | Complete notebook: installs Ollama, pulls the model, starts the server, opens the public API tunnel |
-| `setup-opencode_Ornith-1.5-35B-A3B_Q4_K_M_ollama.bat` | One-click Windows helper: paste the tunnel URL → writes the provider into OpenCode's config (merges, never overwrites) |
+| `Ternary-Bonsai-2-27B_Q2_0_llama-cpp.ipynb` | Complete notebook: builds llama.cpp (CUDA), pulls the ternary model, serves it 100% on GPU, opens the public API tunnel |
+| `setup-opencode_Ornith-1.5-35B-A3B_Q4_K_M_ollama.bat` | One-click Windows helper for **both** notebooks: paste the tunnel URL → it asks which model is running (Ornith / Bonsai / both) → writes the provider into OpenCode's config (merges, never overwrites) |
 
 ## The model
 
@@ -42,6 +43,20 @@ enough to that experience to do real work — at $0.
   sessions under ~30k tokens, then start fresh or compact
 - **~12–14 tok/s** on the free T4 — fast enough for agentic loops (plan → edit → test), slow
   enough to be patient with big generations
+
+## The second model: Ternary-Bonsai-2-27B
+
+- **[prism-ml/Ternary-Bonsai-2-27B-gguf](https://huggingface.co/prism-ml/Ternary-Bonsai-2-27B-gguf)**
+  — a dense 27B hybrid-attention model (base: Qwen3.8-27B) re-trained/re-quantized into
+  **ternary weights** ({−1, 0, +1}, ~1.72 bits/weight) — 98.2% of the full-precision model's
+  benchmark average at ~1/9th the size
+- **Q2_0 pack** (7.63 GB) — the packing that runs on **stock llama.cpp ≥ b11556** (no fork);
+  it fits **100% in the T4's VRAM**, eliminating the CPU-offload penalty
+- Documented benchmarks: coding **level with its full-precision baseline** (LiveCodeBench 90.07,
+  ~1.5 pts from the best frontier models), agentic tool-calling (BFCL v3) 74.92
+- **Reasoning model** — thinks by default (`xhigh` effort): budget `max_tokens` generously
+- Served id: `bonsai-2-27b` · context 32k (native 262k) · estimated **~25–35 tok/s** on the T4
+  (verify on first run)
 
 ## Quick start
 
@@ -55,8 +70,9 @@ enough to that experience to do real work — at $0.
    - Cell 6: load the model onto the GPU (~4–6 min, one-time)
    - Cell 7: start the Cloudflare quick tunnel → prints a `https://…trycloudflare.com` URL
    - Cell 8: end-to-end test of the public URL
-4. On Windows, double-click the `.bat`, paste the tunnel URL — done.
-   In OpenCode, select the provider **“Ornith 35B (Colab)”**.
+4. On Windows, double-click the `.bat`, paste the tunnel URL, and pick **which model is
+   running** (`1` Ornith / `2` Bonsai / `3` both) — done.
+   In OpenCode, select the matching provider (e.g. **“Bonsai 2 27B (Colab)”**).
 5. Other OpenAI-compatible clients: `base_url = https://<tunnel>/v1`, `api_key = ollama`
    (any non-empty string).
 
@@ -78,7 +94,7 @@ enough to that experience to do real work — at $0.
 Examples:
 
 - `Ornith-1.5-35B-A3B_Q4_K_M_ollama.ipynb` — Ornith 35B (3B active), Q4_K_M quant, served by **Ollama**
-- `Ornith-1.5-35B-A3B_Q3_K_M_llama-cpp.ipynb` — same model, Q3_K_M quant, served by **llama.cpp** *(future)*
+- `Ternary-Bonsai-2-27B_Q2_0_llama-cpp.ipynb` — Bonsai 27B (dense), Q2_0 ternary quant, served by **llama.cpp**
 
 The naming makes it trivial to add more models/quant/runners (KAT-Coder, llama.cpp builds,
 full-GPU quantizations) as separate, self-contained notebooks.
