@@ -1,8 +1,8 @@
-# 🐦 Colab LLMs — Claude-class agentic coding, for $0
+# 🆓 free-agent — Claude-class agentic coding, for $0
 
-**This project runs frontier-quality coding models inside an agentic LLM harness (OpenCode) on
-free Google Colab hardware — with the goal of matching what closed models like Claude charge
-$15–20/month for.**
+**This project runs frontier-quality coding models inside agentic LLM harnesses (OpenCode,
+Claude Code, Cursor, Cline, Aider…) on free Google Colab hardware — with the goal of matching
+what closed models like Claude charge $15–20/month for.**
 
 Closed frontier models set the bar for agentic coding: reading whole repos, planning multi-step
 tasks, editing files, running tools, recovering from their own mistakes. That ability normally
@@ -12,15 +12,15 @@ enough to that experience to do real work — at $0.
 
 ```
 ┌─────────────────────┐        ┌────────────────────────────────┐        ┌─────────────────┐
-│  Your laptop        │        │  Free Google Colab T4 (GPU)    │        │  OpenCode /     │
-│  (no GPU needed)    │◄─HTTPS─►│  Ollama / llama.cpp serving an │◄─HTTPS─►│  Cursor / Cline │
-│                     │  tunnel │  open coding model + API key   │  API    │  agentic tools  │
+│  Your laptop        │        │  Free Google Colab T4 (GPU)    │        │  Any agentic    │
+│  (no GPU needed)    │◄─HTTPS─►│  Ollama / llama.cpp serving an │◄─HTTPS─►│  client: Open-  │
+│                     │  tunnel │  open coding model + API key   │  API    │  Code & 10 more │
 └─────────────────────┘        └────────────────────────────────┘        └─────────────────┘
 ```
 
 - **No local GPU needed** — a plain laptop is the thin client; all compute is Colab's free T4
-- **OpenAI-compatible API** — works with OpenCode, Cursor, Cline, Aider, or any tool that speaks
-  chat-completions
+- **Works with the whole agentic ecosystem** — OpenCode, Claude Code, Cursor, Cline, Aider and
+  10+ more (see the client table below)
 - **Agentic-ready** — up to **128k-token context** (Bonsai) so the agent can hold real codebases,
   system prompts, tool outputs, and multi-step history in one request
 - **Secured public API** — each session generates an **API key**; the tunnel is useless without it
@@ -29,9 +29,9 @@ enough to that experience to do real work — at $0.
 ## Repository layout
 
 ```
-colab model/
+free-agent/
 ├── README.md                                 ← you are here (kept outside the model folders)
-├── setup-opencode_…ollama.bat                ← shared OpenCode setup — works for BOTH models
+├── setup-opencode_…ollama.bat                ← OpenCode setup — works for BOTH models
 ├── Ornith-1.5-35B-A3B/                       ← folder: everything for model 1
 │   └── Ornith-1.5-35B-A3B_Q4_K_M_ollama.ipynb
 └── Ternary-Bonsai-2-27B/                     ← folder: everything for model 2
@@ -47,6 +47,30 @@ colab model/
 | `Ternary-Bonsai-2-27B/Ternary-Bonsai-2-27B_Q2_0_llama-cpp_v3.ipynb` | Complete notebook: **prebuilt** llama-server (PrismML fork + bundled CUDA libs, no compile), ternary model **100% on GPU**, **128K context**, secured public API, speed benchmark, optional speculative-decoding auto-tune, API-key fix cell, keep-alive monitor |
 | `Ternary-Bonsai-2-27B/Ternary-Bonsai-2-27B_PTQ1_0_little.ipynb` | Same pipeline as the v3 notebook, for the **little** packing (PTQ1_0, 5.95 GB): ~2 GB less VRAM → more headroom for context/KV on the T4 |
 | `setup-opencode_Ornith-1.5-35B-A3B_Q4_K_M_ollama.bat` | One-click Windows helper for **all three notebooks**: paste the tunnel URL → paste the API key → pick which model is running (Ornith / Bonsai / both) → writes the provider into OpenCode's config (merges, never overwrites) |
+
+## Works with your agent — not just one
+
+The API is plain **OpenAI-compatible chat-completions** (`/v1/chat/completions`), so any agentic
+client that speaks that format works. The `.bat` automates OpenCode; everything else is a
+one-line config:
+
+| Client | How to connect |
+|---|---|
+| **OpenCode** | ✅ one-click — the `.bat` writes the provider (URL + key), merges, never overwrites |
+| **Claude Code** | Point `ANTHROPIC_BASE_URL` at the tunnel and `ANTHROPIC_AUTH_TOKEN` at your key — requires a llama.cpp build exposing the Anthropic-compatible `/v1/messages` endpoint (verify your build supports it) |
+| **Cursor** | Settings → Models → OpenAI API key → override base URL with `<tunnel>/v1` |
+| **Cline / Roo Code / Kilo Code** (VS Code) | Provider `OpenAI Compatible` → base URL `<tunnel>/v1`, API key, model id |
+| **Continue** (VS Code/JetBrains) | Provider `openai` → `apiBase: <tunnel>/v1`, `apiKey`, `model` |
+| **Aider** | `--openai-api-base <tunnel>/v1 --openai-api-key <key> --model openai/bonsai-2-27b` |
+| **Goose** (Block) | Provider `OpenAI` → base URL `<tunnel>/v1`, API key, model id |
+| **OpenAI Codex CLI** | `model_provider` entry in `config.toml` → `base_url = "<tunnel>/v1"`, `api_key` |
+| **Gemini CLI** | OpenAI-compatible mode → base URL `<tunnel>/v1`, key, model id |
+| **Crush** (Charm) | Config → provider `openai` → `base_url: <tunnel>/v1`, key, model id |
+| **Zed** | `openai` provider settings → `api_url: <tunnel>/v1`, key, model id |
+| **Anything speaking OpenAI format** | `base_url = <tunnel>/v1` · `api_key = <printed key>` · model id `bonsai-2-27b` |
+
+> Model ids: Bonsai serves `bonsai-2-27b`; Ornith serves its HF model tag (shown in its
+> notebook). Ornith is served by Ollama, so Ollama-native clients work with it out of the box.
 
 ## The models
 
@@ -85,11 +109,9 @@ colab model/
    the **API key** (plus a ready-to-paste OpenCode config)
 4. On Windows, double-click the `.bat` at the repo root: paste the **URL**, paste the **API
    key**, and pick **which model is running** (`1` Ornith / `2` Bonsai / `3` both)
-5. In OpenCode, select the matching provider (e.g. **"Bonsai 2 27B (Colab)"**)
-6. Other OpenAI-compatible clients: `base_url = https://<tunnel>/v1`, `api_key = <the printed
-   key>`, model id `bonsai-2-27b` (Bonsai) or the Ornith model tag
+5. In your agent, select the matching provider (e.g. **"Bonsai 2 27B (Colab)"** in OpenCode)
 
-## Agentic use notes (OpenCode)
+## Agentic use notes
 
 - Start the agent in a **fresh session per task** — agentic context grows fast (system prompt +
   file contents + tool output)
